@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres       # DockerのDBユーザー名
+  password: password      # DockerのDBパスワード
+  host: db                # docker-compose 内のサービス名
+  port: 5432
+
+development:
+  <<: *default
+  database: fuwaly_development
+
+test:
+  <<: *default
+  database: fuwaly_test
+
+production:
+  <<: *default
+  database: fuwaly_production
+  username: <%= ENV['APP_DATABASE_USER'] %>
+  password: <%= ENV['APP_DATABASE_PASSWORD'] %>

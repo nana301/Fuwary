@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MyApp</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+        <li><%= link_to "トップページ", root_path %></li>
+
+        <% if user_signed_in? %>
+          <li><%= link_to "マイページ", mypage_path %></li>
+          <li>
+            <%= button_to "ログアウト",
+              destroy_user_session_path,
+              method: :delete %>
+          </li>
+        <% else %>
+          <li><%= link_to "ログイン", new_user_session_path %></li>
+          <li><%= link_to "サインアップ", new_user_registration_path %></li>
+        <% end %>
+      </ul>
+    </nav>
+
+    <%= yield %>
+  </body>
+</html>

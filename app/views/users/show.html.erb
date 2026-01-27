@@ -1,0 +1,16 @@
+<h1>マイページ</h1>
+
+<p>
+  メールアドレス：
+  <%= @user.email %>
+</p>
+
+<p>
+  ニックネーム：
+  <%= @profile&.nickname.presence || "未設定" %>
+</p>
+
+<p>
+  自己紹介：
+  <%= @profile.bio.presence || "未設定" %>
+</p>

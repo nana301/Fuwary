@@ -1,0 +1,51 @@
+<h1 class="text-3xl font-bold text-center mb-4">
+  Fuwaly
+</h1>
+
+<p class="text-gray-700 text-center mb-10">
+  今の気持ちにそっと寄り添う、やさしいタロット占い
+</p>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+  <div class="p-4 border rounded-lg bg-white shadow">
+    <p class="font-semibold">🌞 本日の運勢</p>
+    <p class="text-sm text-gray-600 mt-2">
+      今日の流れを占う
+    </p>
+  </div>
+
+  <div class="p-4 border rounded-lg bg-white shadow">
+    <p class="font-semibold">💖 ジャンル別占い</p>
+    <p class="text-sm text-gray-600 mt-2">
+      恋愛・仕事・人間関係
+    </p>
+  </div>
+
+  <div class="p-4 border rounded-lg bg-white shadow">
+    <p class="font-semibold">🌿 感情から占う</p>
+    <p class="text-sm text-gray-600 mt-2">
+      今の気持ちを言葉に
+    </p>
+  </div>
+</div>
+
+<div class="flex justify-center gap-4">
+  <% if user_signed_in? %>
+    <%= link_to "マイページへ",
+        user_path(current_user),
+        class: "px-6 py-2 rounded bg-purple-600 text-white hover:bg-purple-700" %>
+
+    <%= button_to "ログアウト",
+        destroy_user_session_path,
+        method: :delete,
+        class: "px-6 py-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100" %>
+  <% else %>
+    <%= link_to "ログイン",
+        new_user_session_path,
+        class: "px-6 py-2 rounded bg-purple-600 text-white hover:bg-purple-700" %>
+
+    <%= link_to "新規登録",
+        new_user_registration_path,
+        class: "px-6 py-2 rounded border border-purple-600 text-purple-600 hover:bg-purple-50" %>
+  <% end %>
+</div>
