@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_26_081828) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_29_082350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,6 +21,38 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_081828) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"
+  end
+
+  create_table "tarot_cards", force: :cascade do |t|
+    t.string "name"
+    t.boolean "upright"
+    t.text "meaning"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tarot_result_cards", force: :cascade do |t|
+    t.bigint "tarot_result_id", null: false
+    t.bigint "tarot_card_id", null: false
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tarot_card_id"], name: "index_tarot_result_cards_on_tarot_card_id"
+    t.index ["tarot_result_id"], name: "index_tarot_result_cards_on_tarot_result_id"
+  end
+
+  create_table "tarot_results", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "fortune_type", default: 0, null: false
+    t.string "genre"
+    t.string "emotion"
+    t.string "question"
+    t.text "result_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "tarot_card_id"
+    t.index ["tarot_card_id"], name: "index_tarot_results_on_tarot_card_id"
+    t.index ["user_id"], name: "index_tarot_results_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -36,4 +68,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_26_081828) do
   end
 
   add_foreign_key "profiles", "users"
+  add_foreign_key "tarot_result_cards", "tarot_cards"
+  add_foreign_key "tarot_result_cards", "tarot_results"
+  add_foreign_key "tarot_results", "tarot_cards"
+  add_foreign_key "tarot_results", "users"
 end

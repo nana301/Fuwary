@@ -1,51 +1,76 @@
-<h1 class="text-3xl font-bold text-center mb-4">
-  Fuwaly
-</h1>
+<div class="max-w-2xl mx-auto px-4 py-10">
 
-<p class="text-gray-700 text-center mb-10">
-  今の気持ちにそっと寄り添う、やさしいタロット占い
-</p>
+  <h1 class="text-3xl font-bold text-center mb-8">
+    🔮 今日のあなたへ
+  </h1>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-  <div class="p-4 border rounded-lg bg-white shadow">
-    <p class="font-semibold">🌞 本日の運勢</p>
-    <p class="text-sm text-gray-600 mt-2">
-      今日の流れを占う
-    </p>
+  <!-- タブ -->
+  <div class="flex justify-center gap-2 mb-8">
+    <button data-tab="today" class="tab-btn tab-active">今日の運勢</button>
+    <button data-tab="genre" class="tab-btn">ジャンル別</button>
+    <button data-tab="emotion" class="tab-btn">感情から占う</button>
   </div>
 
-  <div class="p-4 border rounded-lg bg-white shadow">
-    <p class="font-semibold">💖 ジャンル別占い</p>
-    <p class="text-sm text-gray-600 mt-2">
-      恋愛・仕事・人間関係
-    </p>
+  <!-- 今日の運勢 -->
+  <div id="tab-today" class="tab-content">
+    <%= form_with url: tarot_results_path, method: :post do %>
+      <%= hidden_field_tag :fortune_type, "today" %>
+
+      <button class="w-full py-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700">
+        今日の運勢を占う
+      </button>
+    <% end %>
   </div>
 
-  <div class="p-4 border rounded-lg bg-white shadow">
-    <p class="font-semibold">🌿 感情から占う</p>
-    <p class="text-sm text-gray-600 mt-2">
-      今の気持ちを言葉に
-    </p>
+  <!-- ジャンル別 -->
+  <div id="tab-genre" class="tab-content hidden">
+    <% if user_signed_in? %>
+      <%= form_with url: tarot_results_path, method: :post do %>
+        <%= hidden_field_tag :fortune_type, "genre" %>
+
+        <select name="genre"
+          class="w-full mb-4 p-3 border rounded-lg">
+          <option value="">ジャンルを選択</option>
+          <option value="恋愛">恋愛</option>
+          <option value="仕事">仕事</option>
+          <option value="人間関係">人間関係</option>
+        </select>
+
+        <textarea name="question"
+          placeholder="気になること（任意）"
+          class="w-full mb-4 p-3 border rounded-lg"></textarea>
+
+        <button class="w-full py-4 bg-purple-600 text-white rounded-xl">
+          占う
+        </button>
+      <% end %>
+    <% else %>
+      <%= render "shared/login_required" %>
+    <% end %>
   </div>
-</div>
 
-<div class="flex justify-center gap-4">
-  <% if user_signed_in? %>
-    <%= link_to "マイページへ",
-        user_path(current_user),
-        class: "px-6 py-2 rounded bg-purple-600 text-white hover:bg-purple-700" %>
+  <!-- 感情から占う -->
+  <div id="tab-emotion" class="tab-content hidden">
+    <% if user_signed_in? %>
+      <%= form_with url: tarot_results_path, method: :post do %>
+        <%= hidden_field_tag :fortune_type, "emotion" %>
 
-    <%= button_to "ログアウト",
-        destroy_user_session_path,
-        method: :delete,
-        class: "px-6 py-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100" %>
-  <% else %>
-    <%= link_to "ログイン",
-        new_user_session_path,
-        class: "px-6 py-2 rounded bg-purple-600 text-white hover:bg-purple-700" %>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <% ["不安", "迷い", "悲しい", "嬉しい", "疲れた", "前向き"].each do |e| %>
+            <label class="border rounded-lg p-3 text-center cursor-pointer">
+              <input type="radio" name="emotion" value="<%= e %>" class="hidden">
+              <%= e %>
+            </label>
+          <% end %>
+        </div>
 
-    <%= link_to "新規登録",
-        new_user_registration_path,
-        class: "px-6 py-2 rounded border border-purple-600 text-purple-600 hover:bg-purple-50" %>
-  <% end %>
+        <button class="w-full py-4 bg-purple-600 text-white rounded-xl">
+          カードを引く
+        </button>
+      <% end %>
+    <% else %>
+      <%= render "shared/login_required" %>
+    <% end %>
+  </div>
+
 </div>

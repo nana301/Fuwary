@@ -1,0 +1,10 @@
+<h2 class="text-xl font-bold mb-4">占い結果</h2>
+
+<p class="mb-6"><%= @result_text %></p>
+
+<p class="text-sm text-gray-500">
+  ※この結果を保存するにはログインが必要です
+</p>
+
+<%= link_to "ログインして保存する", new_user_session_path,
+  class: "mt-4 inline-block px-4 py-2 bg-purple-600 text-white rounded" %>

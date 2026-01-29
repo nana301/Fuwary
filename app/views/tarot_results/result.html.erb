@@ -1,0 +1,34 @@
+<div class="max-w-xl mx-auto px-4 py-10">
+
+  <h1 class="text-2xl font-bold text-center mb-8">
+    🔮 あなたへのメッセージ
+  </h1>
+
+  <!-- カード -->
+  <div class="flex justify-center mb-8">
+    <div class="w-64 p-6 bg-white rounded-2xl shadow-lg animate-fade-in">
+      <p class="text-center text-lg font-semibold mb-2">
+        <%= @card.name %>
+      </p>
+      <p class="text-center text-sm text-gray-600">
+        <%= @card.meaning %>
+      </p>
+    </div>
+  </div>
+
+  <!-- メッセージ -->
+  <div class="bg-purple-50 rounded-xl p-6 mb-8 leading-relaxed">
+    <%= simple_format(@result_text) %>
+  </div>
+
+  <div class="text-center">
+    <p class="text-sm text-gray-600 mb-4">
+      ※ 結果を保存するにはログインしてください
+    </p>
+
+    <%= link_to "ログインして保存する",
+        new_user_session_path,
+        class: "inline-block px-6 py-3 rounded-lg bg-purple-600 text-white hover:bg-purple-700" %>
+  </div>
+</div>
+
