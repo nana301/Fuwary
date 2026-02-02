@@ -1,3 +1,64 @@
+### ER図
+[![Image from Gyazo](https://i.gyazo.com/3eee8a98ceba716aa3dbf99e52d438ee.png)](https://gyazo.com/3eee8a98ceba716aa3dbf99e52d438ee)
+
+### 本サービスの概要（700文字以内）
+AIを活用したタロット占いを通して、
+毎日の気持ちや考えを整理し、心をやさしく整えるWebアプリです。
+占いというエンタメ性を取り入れながら、
+自分と向き合う時間を楽しく、自然に習慣化できる体験を提供します。
+
+### MVPで実装する予定の機能
+ユーザー登録・ログイン機能
+パスワード変更機能
+メールアドレス変更機能
+今日の運勢（未ログイン可）
+感情から占う機能（ログイン後）
+占い結果の履歴保存（ログイン後）
+お気に入り（いいね）登録・解除
+SNSシェア機能
+占い内容の深堀り（カードを追加）
+
+### テーブル詳細
+#### usersテーブル
+email：ログイン用メールアドレス
+encrypted_password：パスワード
+created_at：作成日時
+updated_at：更新日時
+
+#### profilesテーブル
+display_name：表示名
+created_at：作成日時
+updated_at：更新日時
+
+#### tarot_resultsテーブル
+fortune_type：占い種別
+genre：ジャンル（恋愛・仕事など）
+emotion：感情（感情占い用）
+question：質問内容
+result_text：AI生成の占い結果
+card_count：引いたカード枚数（最大3）
+created_at：占った日時
+updated_at：更新日時
+
+#### tarot_cardsテーブル
+card_name：カード名
+card_position：何枚目のカードか（1〜3）
+card_meaning：カード解説
+created_at：作成日時
+
+#### likesテーブル
+created_at：いいね日時
+
+
+### ER図の注意点
+- [✔] プルリクエストに最新のER図のスクリーンショットを画像が表示される形で掲載できているか？
+- [✔] テーブル名は複数形になっているか？
+- [✔] カラムの型は記載されているか？
+- [✔] 外部キーは適切に設けられているか？
+- [✔] リレーションは適切に描かれているか？多対多の関係は存在しないか？
+- [✔] STIは使用しないER図になっているか？
+- [✔] Postsテーブルにpost_nameのように"テーブル名+カラム名"を付けていないか？
+
 ### 画面遷移図
 https://www.figma.com/design/gXG9gkqGSD89OwL1EoJAZQ/Figma-basics?node-id=0-1&t=X4lNwouxMVIReQic-1 
 
