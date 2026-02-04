@@ -1,0 +1,39 @@
+<% if @tab == "history" %>
+  <section class="mb-12">
+    <h2 class="text-xl font-semibold mb-4">🧾 占い履歴</h2>
+
+    <% if @tarot_results.present? %>
+      <ul class="space-y-4">
+        <% @tarot_results.each do |result| %>
+          <li class="bg-white p-4 rounded-xl shadow hover:shadow-md hover:-translate-y-0.5 transition">
+            <%= link_to tarot_result_path(result), class: "block" do %>
+              <div class="flex items-start justify-between gap-3">
+                <p class="text-sm text-gray-500">
+                  <%= l(result.created_at, format: :short) %>
+                </p>
+
+                <%= fortune_badge(result) %>
+              </div>
+
+              <p class="mt-2 font-medium text-gray-700">
+                  <% if result.result_text.present? %>
+                <%= result.result_text.truncate(50) %>
+                  <% else %>
+                <span class="text-gray-500">
+                  🃏 カード <%= result.draw_status_label %>
+                </span>
+              <% end %>
+              </p>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-500">まだ占い履歴がありません。</p>
+    <% end %>
+
+  <div class="mt-8 flex justify-center">
+    <%= paginate @tarot_results, params: { tab: "history" } %>
+  </div>
+  </section>
+<% end %>

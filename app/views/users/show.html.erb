@@ -1,0 +1,47 @@
+<div class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-2xl font-bold text-center mb-8">
+    マイページ
+  </h1>
+
+  <!-- タブ（セグメント） -->
+  <div class="flex justify-center mb-8">
+    <div class="inline-flex rounded-full bg-gray-100 p-1">
+      <%= link_to "🧾 占い履歴", mypage_path(tab: "history"),
+          class: "px-4 py-2 rounded-full text-sm font-semibold transition " +
+                 (@tab == "history" ? "bg-purple-600 text-white shadow" : "text-gray-700 hover:bg-white") %>
+
+      <%= link_to "❤️ お気に入り", mypage_path(tab: "likes"),
+          class: "px-4 py-2 rounded-full text-sm font-semibold transition " +
+                 (@tab == "likes" ? "bg-purple-600 text-white shadow" : "text-gray-700 hover:bg-white") %>
+    </div>
+  </div>
+
+  <!-- プロフィール（カード） -->
+  <div class="bg-white rounded-2xl shadow p-6 mb-10">
+    <div class="space-y-3">
+      <div>
+        <p class="text-xs text-gray-500">ニックネーム</p>
+        <p class="text-base font-semibold text-gray-800">
+          <%= @profile&.nickname.presence || "未設定" %>
+        </p>
+      </div>
+
+      <div>
+        <p class="text-xs text-gray-500">自己紹介</p>
+        <p class="text-sm text-gray-700 whitespace-pre-line">
+          <%= @profile&.bio.presence || "未設定" %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- コンテンツ -->
+  <div class="border-t border-gray-200 pt-8">
+    <% if @tab == "history" %>
+      <%= render "history", tarot_results: @tarot_results %>
+    <% else %>
+      <%= render "likes", liked_results: @liked_results %>
+    <% end %>
+  </div>
+</div>
+

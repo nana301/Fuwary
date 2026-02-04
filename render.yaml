@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: fuwary
+    env: ruby
+    plan: free
+    buildCommand: |
+      bundle install
+      bin/rails assets:precompile
+    startCommand: bin/rails server -b 0.0.0.0 -p $PORT
+    releaseCommand: |
+      bin/rails db:migrate
+      bin/rails db:seed

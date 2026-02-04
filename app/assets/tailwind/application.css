@@ -1,0 +1,40 @@
+@config "../../../tailwind.config.js";
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .nav-link {
+    @apply px-3 py-2 rounded-lg hover:bg-blue-50 transition;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-3 rounded-xl
+           text-white font-semibold
+           bg-gradient-to-r from-purple-600 to-fuchsia-600
+           shadow-sm hover:shadow-md
+           active:scale-[0.99] transition;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center
+           px-5 py-3 rounded-xl
+           bg-white/90 ring-1 ring-black/5
+           text-gray-800 font-semibold
+           hover:bg-white hover:shadow-md transition;
+  }
+
+  .card {
+    @apply bg-white/80 backdrop-blur-sm
+           rounded-2xl shadow-sm ring-1 ring-black/5
+           p-6;
+  }
+
+  .input {
+    @apply w-full p-3 rounded-xl
+           bg-white/90 ring-1 ring-black/5
+           focus:outline-none focus:ring-2 focus:ring-purple-300;
+  }
+}

@@ -1,0 +1,9 @@
+<% if page.current? %>
+  <span aria-current="page"
+        class="inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-purple-600 px-3 text-sm font-semibold text-white shadow">
+    <%= page %>
+  </span>
+<% else %>
+  <%= link_to page, url, rel: page.rel,
+      class: "inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-white px-3 text-sm font-semibold text-gray-700 shadow ring-1 ring-gray-200 hover:bg-gray-50 transition" %>
+<% end %>

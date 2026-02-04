@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "like-button-for-tarot-result-#{@tarot_result.id}" do %>
+  <%= render 'tarot_results/like_button', tarot_result: @tarot_result %>
+<% end %>

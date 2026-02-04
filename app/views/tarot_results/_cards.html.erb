@@ -1,0 +1,54 @@
+<%= render "shared/card",
+      title: "🃏 引いたカード",
+      subtitle: "最大3枚まで引けます" do %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <% result_cards.each do |result_card| %>
+      <% orientation = result_card.orientation.to_s %>
+      <% is_reversed = (orientation == "reversed") %>
+
+      <% keywords = is_reversed ? ["内省", "停滞", "誤解", "手放し"] : ["直感", "前進", "調和", "再出発"] %>
+
+      <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-4 shadow-sm
+                  hover:shadow-md hover:-translate-y-0.5 transition">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-xs text-gray-500"><%= result_card.position %>枚目</p>
+            <p class="mt-2 font-semibold text-gray-900">
+              <%= result_card.tarot_card&.name || "（カード名不明）" %>
+            </p>
+          </div>
+
+          <span class="shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1
+            <%= is_reversed ? "bg-rose-50 text-rose-700 ring-rose-200" : "bg-emerald-50 text-emerald-700 ring-emerald-200" %>">
+            <%= is_reversed ? "逆位置" : "正位置" %>
+          </span>
+        </div>
+
+        <p class="mt-2 text-sm text-gray-600 leading-relaxed line-clamp-5">
+          <%= result_card.tarot_card&.meaning || "（意味が未登録です）" %>
+        </p>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <% keywords.each do |kw| %>
+            <span class="inline-flex items-center rounded-full bg-gray-50 px-2.5 py-1 text-xs text-gray-700 ring-1 ring-gray-200">
+              <%= kw %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% remaining = 3 - result_cards.size %>
+    <% remaining.times do |i| %>
+      <div class="rounded-2xl border border-dashed border-gray-300 p-4 bg-gray-50/60">
+        <p class="text-xs text-gray-500"><%= result_cards.size + i + 1 %>枚目</p>
+        <p class="mt-2 font-semibold text-gray-400">まだ引いていません</p>
+        <p class="mt-2 text-sm text-gray-400 leading-relaxed">
+          次のカードを引くとここに表示されます
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+<% end %>

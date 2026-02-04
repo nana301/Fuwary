@@ -1,0 +1,13 @@
+<%# locals: title(optional), subtitle(optional) %>
+<div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm ring-1 ring-black/5 p-6 md:p-8">
+  <% if local_assigns[:title].present? %>
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold text-gray-900"><%= title %></h2>
+      <% if local_assigns[:subtitle].present? %>
+        <p class="text-sm text-gray-500 mt-1"><%= subtitle %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= yield %>
+</div>

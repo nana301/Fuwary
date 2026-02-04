@@ -1,0 +1,19 @@
+<div>
+  <%= render "shared/card",
+        title: "🔮 総合メッセージ",
+        subtitle: "カードを引くたびに内容が更新されます" do %>
+
+    <div class="text-center">
+      <p class="text-gray-800 leading-relaxed whitespace-pre-line text-base md:text-lg">
+        <% if tarot_result.result_text.present? %>
+          <%= tarot_result.result_text %>
+        <% else %>
+          <span class="text-gray-500">
+            まずは1枚目のカードからメッセージを受け取りましょう。
+          </span>
+        <% end %>
+      </p>
+    </div>
+
+  <% end %>
+</div>

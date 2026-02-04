@@ -1,0 +1,17 @@
+<%= turbo_stream.replace dom_id(@tarot_result, :cards) do %>
+  <%= render "cards", tarot_result: @tarot_result, result_cards: @result_cards %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@tarot_result, :message) do %>
+  <%= render "message", tarot_result: @tarot_result %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@tarot_result, :draw_button) do %>
+  <%= render "draw_button", tarot_result: @tarot_result %>
+<% end %>
+
+<% if user_signed_in? %>
+  <%= turbo_stream.replace dom_id(@tarot_result, :like_button) do %>
+    <%= render "like_button", tarot_result: @tarot_result %>
+  <% end %>
+<% end %>

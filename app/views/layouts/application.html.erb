@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fuwaly</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-gradient-to-br from-purple-50 via-fuchsia-50 to-indigo-50 text-gray-900">
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <%= link_to root_path, class: "flex items-center gap-2 font-bold text-lg" do %>
+          <span class="text-2xl">🔮</span>
+          <span class="bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 bg-clip-text text-transparent">
+            Fuwaly
+          </span>
+        <% end %>
+
+        <nav class="flex items-center gap-3 text-sm font-semibold">
+          <%= link_to "トップページ", root_path, class: "px-3 py-2 rounded-lg hover:bg-blue-50 transition" %>
+
+          <% if user_signed_in? %>
+            <%= link_to "マイページ", mypage_path, class: "px-3 py-2 rounded-lg hover:bg-blue-50 transition" %>
+            <%= button_to "ログアウト", destroy_user_session_path,
+                  method: :delete,
+                  form: { class: "inline" },
+                  class: "px-3 py-2 rounded-lg hover:bg-red-50 transition text-red-600" %>
+          <% else %>
+            <%= link_to "ログイン", new_user_session_path, class: "px-3 py-2 rounded-lg hover:bg-blue-50 transition" %>
+            <%= link_to "サインアップ", new_user_registration_path, class: "px-3 py-2 rounded-lg hover:bg-blue-50 transition" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-12">
+      <%= yield %>
+    </main>
+  </body>
+</html>

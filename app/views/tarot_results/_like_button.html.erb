@@ -1,0 +1,21 @@
+<%= turbo_frame_tag "like-button-for-tarot-result-#{tarot_result.id}" do %>
+  <% liked = tarot_result.liked_by?(current_user) %>
+
+  <div class="card text-center">
+    <% if liked %>
+      <%= button_to tarot_result_like_path(tarot_result),
+            method: :delete,
+            data: { turbo_frame: "like-button-for-tarot-result-#{tarot_result.id}" },
+            class: "w-full py-3 rounded-xl font-semibold bg-rose-50 text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100 transition active:scale-[0.99]" do %>
+        ❤️ お気に入り解除
+      <% end %>
+    <% else %>
+      <%= button_to tarot_result_like_path(tarot_result),
+            method: :post,
+            data: { turbo_frame: "like-button-for-tarot-result-#{tarot_result.id}" },
+            class: "w-full py-3 rounded-xl font-semibold bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 transition active:scale-[0.99]" do %>
+        🤍 お気に入りに追加
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
