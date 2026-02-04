@@ -13,8 +13,6 @@ gem "jbuilder"
 
 gem 'devise'
 
-gem "sass-rails"
-
 gem "stimulus-rails"
 
 gem "turbo-rails"
