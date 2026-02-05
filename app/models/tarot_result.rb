@@ -52,22 +52,18 @@ class TarotResult < ApplicationRecord
   end
 
   def draw_next_card!
-    return false unless can_draw_more?
+    return :limit unless can_draw_more?
 
     position = tarot_result_cards.count + 1
     card = pick_card_for
-    return false unless card
+    return :no_card unless card
 
     orientation = rand < 0.5 ? "upright" : "reversed"
+    tarot_result_cards.create!(tarot_card: card, position: position, orientation: orientation)
 
-    tarot_result_cards.create!(
-      tarot_card: card,
-      position: position,
-      orientation: orientation
-    )
-
-    true
+    :ok
   end
+
 
   private
 

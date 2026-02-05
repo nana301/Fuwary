@@ -53,18 +53,21 @@ class TarotResultsController < ApplicationController
   end
 
   def draw
-    unless @tarot_result.draw_next_card!
-      redirect_to @tarot_result, alert: "これ以上カードを引けません"
+    result = @tarot_result.draw_next_card!
+
+    case result
+    when :limit
+      redirect_to @tarot_result, alert: "これ以上カードを引けません", status: :see_other
+      return
+    when :no_card
+      redirect_to @tarot_result, alert: "カードが準備できていません（seed未投入の可能性）", status: :see_other
       return
     end
 
-    text, ok = AiFortuneService.new(@tarot_result).call
+    text, ok_ai = AiFortuneService.new(@tarot_result).call
+    @tarot_result.update!(result_text: text) if ok_ai
 
-    Rails.logger.info("[draw] AiFortuneService ok=#{ok} len=#{text.to_s.length} tarot_result_id=#{@tarot_result.id}")
-
-    @tarot_result.update!(result_text: text) if ok
-
-    redirect_to @tarot_result, notice: "カードを引きました（#{@tarot_result.tarot_result_cards.count}枚目）", status: :see_other
+    redirect_to @tarot_result, notice: "カードを引きました", status: :see_other
   end
 
   def regenerate

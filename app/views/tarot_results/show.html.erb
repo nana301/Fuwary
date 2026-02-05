@@ -17,6 +17,12 @@
       </div>
     <% end %>
 
+    <div class="text-xs text-gray-500 mb-3">
+      debug: result_id=<%= @tarot_result.id %> /
+      cards=<%= @tarot_result.tarot_result_cards.count %> /
+      max=<%= @tarot_result.max_cards %>
+    </div>
+
     <div class="mt-3 text-sm text-gray-500">
       <% if @tarot_result.fortune_type == "today" %>
         今日の運勢
