@@ -41,13 +41,15 @@ class AiFortuneService
     ・「気づき」「意識の向けどころ」を1点だけ示す
     ・抽象的な励まし（例：大丈夫、前向き、流れを信じる）は使わない
     ・感情・迷い・行動のどれか1つに焦点を当てる
+    ・過去の内容は要約・繰り返さない
 
-    カードの絵柄や象徴から、
-    「いまのあなたが引っかかっていそうな一点」を言葉にしてください。
+    重要（反復防止）：
+    ・文頭で「現在、あなたは」「今は、あなたは」「あなたは今〜」を使わない
+    ・導入の定型（こんにちは/まずは/次のカードで〜を見てみますか？）を1文目に置かない
+    ・恋愛（genre）と感情（emotion）で同じ書き出し型を繰り返さない
 
-    全体で100〜120文字以内でまとめてください。
-    過去の内容は要約・繰り返さないでください。
-    出力は必ず1〜2文で、冗長な前置きやまとめは書かないでください。
+    出力は100〜120文字以内。
+    1〜2文で、冗長な前置きやまとめは書かないでください。
     TEXT
   end
 
@@ -90,10 +92,12 @@ class AiFortuneService
         【締めの指示】
         #{closing_instruction}
 
+        【冒頭スタイル（必ず守る）】
+        #{opening_style_instruction}
+
         【文章構成】
-        1. 今の全体的な流れ
-        2. カードから読み取れる心の状態
-        3. 今意識すると良いこと
+        ・冒頭スタイルに従い、すぐ核心へ入る
+        ・最後は指示どおりに締める
         #{closing_structure_hint}
         TEXT
       }
@@ -208,26 +212,32 @@ class AiFortuneService
     count = tarot_result.tarot_result_cards.count
 
     if tarot_result.fortune_type == "today"
-      return "最後は「次のカードで、今日これから気を付けるべきことを見てみますか？」という問いかけで締めてください。" if count == 1
+      return pick_followup([
+        "最後は「次のカードで、今日これから気を付けるべきことを見てみますか？」で締めてください。",
+        "最後は「続けて1枚引いて、注意点だけ確かめますか？」で締めてください。"
+      ]) if count == 1
       return ""
     end
 
     case count
     when 1
-      "最後は「次のカードで、今後気を付けることを見てみますか？」という問いかけで締めてください。"
+      pick_followup([
+        "最後は「次のカードで、今後気を付けることを見てみますか？」で締めてください。",
+        "最後は「もう1枚引いて、引っかかりの正体を見てみますか？」で締めてください。"
+      ])
     when 2
-      "最後は「次のカードで、次の一歩へのヒントを見てみますか？」という問いかけで締めてください。"
+      pick_followup([
+        "最後は「次のカードで、次の一歩へのヒントを見てみますか？」で締めてください。",
+        "最後は「最後に1枚だけ、整えるヒントを確かめますか？」で締めてください。"
+      ])
     else
       ""
     end
   end
 
-  def closing_structure_hint
-    if tarot_result.can_draw_more? || single_card?
-      "4. 問いかけで締める"
-    else
-      "4. 前向きな一言で締める"
-    end
+  def pick_followup(candidates)
+    seed = [tarot_result.id, tarot_result.tarot_result_cards.count, tarot_result.fortune_type].join(":").hash
+    candidates[seed % candidates.length]
   end
 
   def card_specific_instruction
@@ -331,12 +341,72 @@ class AiFortuneService
     map.dig(base, type) || base
   end
 
+  def opening_style_instruction
+    style = pick_opening_style
+
+    case style
+    when :card_subject
+      <<~TEXT
+      1文目は「このカードが示すのは〜」の形で始める（カード主語）。
+      例：「このカードが示すのは、『与えすぎて疲れが溜まる配置』です。」
+      TEXT
+    when :concrete_scene
+      <<~TEXT
+      1文目は具体描写から始める（恋愛/感情の“場面”を描く）。
+      例：「相手に合わせた後、どっと疲れが残りやすい時期です。」
+      TEXT
+    when :question
+      <<~TEXT
+      1文目は問いかけで始める（はい/いいえでなく内省を促す問い）。
+      例：「最近、言いたいことを飲み込む場面が増えていませんか？」
+      TEXT
+    when :symbol
+      <<~TEXT
+      1文目は象徴の一語から始める（比喩は1つまで）。
+      例：「『鎖』が見えるカードです——手放せないこだわりが焦点です。」
+      TEXT
+    end
+  end
+
+  def pick_opening_style
+    styles =
+      if tarot_result.fortune_type == "emotion"
+        # 感情は「問いかけ」「具体描写」寄りが刺さる
+        [:question, :concrete_scene, :card_subject]
+      else
+        # genre/todayはカード主語や象徴スタートが映える
+        [:card_subject, :symbol, :concrete_scene]
+      end
+
+    seed = [
+    tarot_result.id,
+      tarot_result.fortune_type,
+      tarot_result.genre,
+      tarot_result.emotion,
+      tarot_result.tarot_result_cards.count
+    ].join(":").hash
+
+    styles[seed % styles.length]
+  end
+
   def card_tone(card)
     name = card.name.to_s
 
-    return :heavy if name.match?(/死神|悪魔|塔|吊るされた男|月/)
-    return :active if name.match?(/戦車|力|皇帝|恋人|太陽|世界/)
-    return :light if name.match?(/愚者|星|節制/)
+    # 重い・内省が深い・揺さぶりが強い
+    return :heavy if name.match?(
+      /死神|悪魔|塔|吊るされた男|月|審判/
+    )
+
+    # 動き・決断・外向きエネルギーが強い
+    return :active if name.match?(
+      /戦車|力|皇帝|恋人|太陽|世界|魔術師/
+    )
+
+    # 軽やか・希望・調整・回復
+    return :light if name.match?(
+      /愚者|星|節制|女教皇/
+    )
+
+    # 安定・観察・流れを見る
     :calm
   end
-end

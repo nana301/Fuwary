@@ -53,12 +53,12 @@ class TarotResultsController < ApplicationController
   end
 
   def draw
-    @tarot_result.with_lock do
-      return redirect_to @tarot_result unless @tarot_result.can_draw_more?
+    card = draw_card_for(@tarot_result)
 
-      draw_next_card!(@tarot_result)
-      refresh_result_text!(@tarot_result)
-    end
+    @tarot_result.tarot_result_cards.create!(
+      tarot_card: card,
+      orientation: %w[upright reversed].sample
+    )
 
     redirect_to @tarot_result
   end
