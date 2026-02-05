@@ -2,6 +2,7 @@ class AddGeneratedOnAndModeToTarotResults < ActiveRecord::Migration[7.2]
   disable_ddl_transaction!
 
   INDEX_NAME = "index_tarot_results_unique_daily_per_mode"
+  INDEX_COLS = [:user_id, :mode, :generated_on]
 
   def up
     add_column :tarot_results, :mode, :string unless column_exists?(:tarot_results, :mode)
@@ -25,8 +26,8 @@ class AddGeneratedOnAndModeToTarotResults < ActiveRecord::Migration[7.2]
         AND a.generated_on = b.generated_on
     SQL
 
-    unless index_exists?(:tarot_results, name: INDEX_NAME)
-      add_index :tarot_results, [:user_id, :mode, :generated_on],
+    unless index_exists?(:tarot_results, INDEX_COLS, name: INDEX_NAME)
+      add_index :tarot_results, INDEX_COLS,
                 unique: true,
                 name: INDEX_NAME,
                 algorithm: :concurrently
@@ -34,7 +35,9 @@ class AddGeneratedOnAndModeToTarotResults < ActiveRecord::Migration[7.2]
   end
 
   def down
-    remove_index :tarot_results, name: INDEX_NAME if index_exists?(:tarot_results, name: INDEX_NAME)
+    if index_exists?(:tarot_results, INDEX_COLS, name: INDEX_NAME)
+      remove_index :tarot_results, column: INDEX_COLS, name: INDEX_NAME
+    end
     remove_column :tarot_results, :generated_on if column_exists?(:tarot_results, :generated_on)
     remove_column :tarot_results, :mode if column_exists?(:tarot_results, :mode)
   end
