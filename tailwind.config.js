@@ -1,10 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/views/**/*.{html,erb}",
+    "./app/views/**/*.html.erb",
     "./app/helpers/**/*.rb",
-    "./app/assets/**/*.{css,scss}",
-    "./app/javascript/**/*.{js,ts,jsx,tsx}"
+    "./app/javascript/**/*.js"
+  ],
+  safelist: [
+    "bg-gradient-to-br",
+    "from-purple-50",
+    "via-fuchsia-50",
+    "to-indigo-50"
   ],
   theme: {
     extend: {},

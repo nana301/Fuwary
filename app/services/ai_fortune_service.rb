@@ -221,4 +221,3 @@ class AiFortuneService
       "4. 前向きな一言で締める"
     end
   end
-end
