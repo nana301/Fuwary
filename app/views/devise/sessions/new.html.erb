@@ -1,37 +1,35 @@
+<h2 class="text-xl font-semibold mb-6 text-center">ログイン</h2>
 
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p>
-      <%= f.email_field :email,
-        autofocus: true,
-        autocomplete: "email",
-        class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
-    </p>
+  <div class="field mb-4">
+    <p class="mb-1"><%= f.label :email %></p>
+    <%= f.email_field :email,
+          autofocus: true,
+          autocomplete: "email",
+          class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
   </div>
 
-  <div class="field">
-    <p><%= f.label :password %></p>
-    <p>
-      <%= f.password_field :password,
-        autocomplete: "current-password",
-        class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
-    </p>
+  <div class="field mb-4">
+    <p class="mb-1"><%= f.label :password %></p>
+    <%= f.password_field :password,
+          autocomplete: "current-password",
+          class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
   </div>
 
   <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <p>
-        <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-200" %>
-      </p>
-      <p><%= f.label :remember_me, class: "text-sm text-gray-700" %></p>
+    <div class="field mb-4 flex items-center gap-2">
+      <%= f.check_box :remember_me,
+            class: "h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-200" %>
+      <%= f.label :remember_me, class: "text-sm text-gray-700" %>
     </div>
   <% end %>
 
   <div class="actions">
     <%= f.submit "ログイン",
-      class: "mt-4 inline-flex w-full items-center justify-center rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-200/60" %>
+          class: "w-full rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white shadow hover:bg-purple-700" %>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
+<div class="mt-6 text-center text-sm text-gray-600">
+  <%= render "devise/shared/links" %>
+</div>

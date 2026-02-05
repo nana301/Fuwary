@@ -1,7 +1,7 @@
 services:
   web:
     env_file:
-      - .env
+      - ${ENV_FILE:-.env.development}
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && bin/rails s -b 0.0.0.0"
     volumes:
@@ -12,19 +12,28 @@ services:
       - "3000:3000"
     depends_on:
       - db
+      - mailhog
     environment:
       RAILS_ENV: development
       RACK_ENV: development
       DB_HOST: db
       DB_PORT: 5432
       DB_USERNAME: postgres
-      DB_PASSWORD: password
+      DB_PASSWORD: postgres
+      SMTP_ADDRESS: mailhog
+      SMTP_PORT: 1025
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
   db:
-    image: postgres:16
+    image: postgres:15
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: fuwaly_development
 
 volumes:

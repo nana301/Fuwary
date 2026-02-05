@@ -1,43 +1,53 @@
 class AiFortuneService
   FALLBACK_GENERIC = "占い文の生成に失敗しました。もう一度お試しください。"
-  FALLBACK_SOFT    = "今はメッセージが静かに整えられている最中のようです。焦らず、少し時間をおいてからもう一度受け取ってみてください。"
-  
+  FALLBACK_SOFT    = "カードのメッセージを整えています…。少し待ってから更新してみてください。"
+
   def initialize(tarot_result)
     @tarot_result = tarot_result
   end
 
   def call
-      res = client.chat.completions.create(
-        model: "gpt-4o-mini",
-        messages: prompt_messages
-      )
+    res = client.chat.completions.create(
+      model: "gpt-4o-mini",
+      messages: prompt_messages
+    )
 
-      content = res.choices&.first&.message&.content
-      content.presence || FALLBACK_GENERIC
+    content = res.choices&.first&.message&.content
+    text = content.presence
+    return [text, true] if text.present?
 
-    rescue OpenAI::Errors::RateLimitError, OpenAI::Errors::AuthenticationError => e
-      Rails.logger.warn("[AiFortuneService] #{e.class}: #{e.message}")
-      FALLBACK_SOFT
-
-    rescue StandardError => e
-      Rails.logger.error("[AiFortuneService] #{e.class}: #{e.message}")
-      FALLBACK_GENERIC
-    end
+    [FALLBACK_GENERIC, false]
+  rescue OpenAI::Errors::RateLimitError, OpenAI::Errors::AuthenticationError => e
+    Rails.logger.warn("[AiFortuneService] #{e.class}: #{e.message}")
+    [FALLBACK_SOFT, false]
+  rescue StandardError => e
+    Rails.logger.error("[AiFortuneService] #{e.class}: #{e.message}")
+    [FALLBACK_GENERIC, false]
   end
 
   private
-
   attr_reader :tarot_result
 
   def system_prompt
     <<~TEXT
     あなたは優しく落ち着いた口調のタロット占い師です。
     マルセイユ版タロットカードの象徴や構図をもとに解釈してください。
+
     不安を煽らず、断定的な未来予言は行いません。
-    カードの絵柄・象徴・数の意味を中心に読み解き、今の心の状態を整理した前向きな一歩を
-    丁寧かつ簡潔に示してください。
-    説教口調や命令口調は禁止です。
-    全体で120〜150文字以内でまとめてください。
+    説教口調・命令口調は禁止です。
+
+    以下を必ず守ってください：
+    ・今回引いたカード1枚分の内容だけを書く
+    ・「気づき」「意識の向けどころ」を1点だけ示す
+    ・抽象的な励まし（例：大丈夫、前向き、流れを信じる）は使わない
+    ・感情・迷い・行動のどれか1つに焦点を当てる
+
+    カードの絵柄や象徴から、
+    「いまのあなたが引っかかっていそうな一点」を言葉にしてください。
+
+    全体で100〜120文字以内でまとめてください。
+    過去の内容は要約・繰り返さないでください。
+    出力は必ず1〜2文で、冗長な前置きやまとめは書かないでください。
     TEXT
   end
 
@@ -58,6 +68,8 @@ class AiFortuneService
         content: <<~TEXT
         次のタロット結果をもとに、占い文を作ってください。
 
+        #{card_specific_instruction}
+
         【カードの役割】
         #{position_roles}
 
@@ -68,13 +80,6 @@ class AiFortuneService
 
         【現在の状況】
          いま引いているカード枚数：#{tarot_result.tarot_result_cards.count}枚（最大#{tarot_result.max_cards}枚）
-
-         【条件】
-        ・文字数は400〜600文字程度
-        ・優しく落ち着いた日本語
-        ・「〜でしょう」ではなく「〜かもしれません」を使う
-        ・未来を断定しない
-        ・読み手を否定しない
 
         【カード】
         #{cards_description}
@@ -209,9 +214,9 @@ class AiFortuneService
 
     case count
     when 1
-      "最後は「次のカードで、気を付けること（引っかかり）を見てみますか？」という問いかけで締めてください。"
+      "最後は「次のカードで、今後気を付けることを見てみますか？」という問いかけで締めてください。"
     when 2
-      "最後は「次のカードで、ヒント（次の一歩）を見てみますか？」という問いかけで締めてください。"
+      "最後は「次のカードで、次の一歩へのヒントを見てみますか？」という問いかけで締めてください。"
     else
       ""
     end
@@ -224,3 +229,114 @@ class AiFortuneService
       "4. 前向きな一言で締める"
     end
   end
+
+  def card_specific_instruction
+    count   = tarot_result.tarot_result_cards.count
+    card    = tarot_result.tarot_result_cards.last
+    fortune = tarot_result.fortune_type
+
+    base =
+      if fortune == "today"
+        case count
+        when 1
+          "今日の流れの『核心』を1文で言語化してください。"
+        when 2
+          "『今日1つだけやるなら？』という形で、5分以内にできる行動や心の向け方を1つ示してください。"
+        else
+          ""
+        end
+      else
+        case count
+        when 1
+          "今の状態の『核心』を1文で言語化してください。"
+        when 2
+          "その状態を難しくしている思考や癖を1つ指摘してください。"
+        when 3
+          "すぐにできる心の向け方を1つだけ示してください。"
+        else
+          ""
+        end
+      end
+
+    emotion_rule =
+      if fortune == "emotion"
+        word = emotion_word_for_card(card.tarot_card)
+        "必ず「#{word}」という感情表現を1回だけ使ってください。"
+      else
+        ""
+      end
+
+    reversed_rule =
+      if card.orientation == "reversed"
+        "逆位置のため、本人が無意識に見ないふりをしていることを1つ指摘してください。"
+      else
+        ""
+      end
+
+    <<~TEXT
+    【今回の出力ルール】
+    #{base}
+    #{emotion_rule}
+    #{reversed_rule}
+    TEXT
+  end
+
+  def last_card_reversed?
+    tarot_result.tarot_result_cards.last&.orientation == "reversed"
+  end
+
+  def emotion_word_for_card(card)
+    base = tarot_result.emotion
+    type = card_tone(card)
+
+    map = {
+      "不安" => {
+        calm:  "落ち着かなさ",
+        active:"焦り",
+        heavy: "怖さ",
+        light: "そわそわ"
+      },
+      "怒り" => {
+        calm:  "飲み込んだ苛立ち",
+        active:"衝動的な怒り",
+        heavy: "抑え込んだ不満",
+        light: "小さな引っかかり"
+      },
+      "悲しい" => {
+        calm:  "静かな寂しさ",
+        active:"感情の波",
+        heavy: "喪失感",
+        light: "ふとした切なさ"
+      },
+      "嬉しい" => {
+        calm:  "ほっとする喜び",
+        active:"弾む気持ち",
+        heavy: "胸いっぱいの喜び",
+        light: "軽やかな嬉しさ"
+      },
+      "疲れた" => {
+        calm:  "消耗感",
+        active:"空回り感",
+        heavy: "重だるさ",
+        light: "気力の低下"
+      },
+      "前向き" => {
+        calm:  "静かな前向きさ",
+        active:"やる気",
+        heavy: "腹をくくった前向きさ",
+        light: "軽い追い風"
+      }
+    }
+
+    map.dig(base, type) || base
+  end
+
+  def card_tone(card)
+    name = card.name.to_s
+
+    return :heavy if name.match?(/死神|悪魔|塔|吊るされた男|月/)
+    return :active if name.match?(/戦車|力|皇帝|恋人|太陽|世界/)
+    return :light if name.match?(/愚者|星|節制/)
+    :calm
+  end
+end

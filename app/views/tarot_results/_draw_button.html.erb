@@ -1,19 +1,35 @@
 <% if tarot_result.can_draw_more? %>
   <div class="card text-center">
-    <p class="text-sm text-gray-600 mb-4">もう1枚引いて、メッセージを深めましょう</p>
+
+    <p class="text-sm text-gray-600 mb-4">
+      <% if tarot_result.tarot_result_cards.count == 0 %>
+        まずは1枚目のカードを引きましょう
+      <% else %>
+        もう1枚引いて、メッセージを深めましょう
+      <% end %>
+    </p>
 
     <%= form_with url: draw_tarot_result_path(tarot_result),
-      method: :post do %>
-      <button type="submit" class="btn-primary w-full py-4 text-lg">
+                  method: :post,
+                  data: { turbo: false } do %>
+      <button type="submit"
+              class="btn-primary w-full py-4 text-lg">
         カードを引く
       </button>
     <% end %>
 
-    <p class="text-xs text-gray-500 mt-3">最大3枚まで引けます</p>
+    <p class="text-xs text-gray-500 mt-3">
+      最大<%= tarot_result.max_cards %>枚まで引けます
+    </p>
+
   </div>
 <% else %>
   <div class="card text-center">
-    <p class="text-sm font-semibold text-gray-800">3枚引き終わりました</p>
-    <p class="text-xs text-gray-500 mt-1">結果をゆっくり読み返してみてください</p>
+    <p class="text-sm font-semibold text-gray-800">
+      <%= tarot_result.max_cards %>枚引き終わりました
+    </p>
+    <p class="text-xs text-gray-500 mt-1">
+      結果をゆっくり読み返してみてください
+    </p>
   </div>
 <% end %>

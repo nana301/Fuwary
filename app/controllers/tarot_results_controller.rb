@@ -3,7 +3,7 @@ class TarotResultsController < ApplicationController
   before_action :authorize_tarot_result!, only: %i[show draw]
 
   def authorize_tarot_result!
-    return if @tarot_result.user_id.nil? # ゲスト許可ならここ調整
+    return if @tarot_result.user_id.nil?
     return if user_signed_in? && @tarot_result.user_id == current_user.id
 
     redirect_to root_path, alert: "アクセスできません"
@@ -18,20 +18,22 @@ class TarotResultsController < ApplicationController
     require_login_for_member_fortunes!
     return unless user_signed_in?
 
-   mode = params[:fortune_type].to_s
-    existing = current_user.tarot_results.find_by(mode: mode, generated_on: Time.zone.today)
-    if existing
-      flash[:notice] = "今日の結果を表示しますね。"
-      return redirect_to existing
+    mode = params[:fortune_type].to_s
+
+    if daily_limit_enabled?
+      existing = current_user.tarot_results.find_by(
+        mode: mode,
+        generated_on: Time.zone.today
+      )
+      if existing
+        flash[:notice] = "今日の結果を表示しますね。"
+        return redirect_to existing
+      end
     end
 
     @tarot_result = build_member_result!
 
-    draw_next_card!(@tarot_result)
-
-    refresh_result_text!(@tarot_result)
-
-      redirect_to @tarot_result
+    redirect_to @tarot_result
 
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = e.record.errors.full_messages.first
@@ -39,7 +41,10 @@ class TarotResultsController < ApplicationController
     render "home/index", status: :unprocessable_entity
 
   rescue ActiveRecord::RecordNotUnique
-    existing = current_user.tarot_results.find_by!(mode: mode, generated_on: Time.zone.today)
+    existing = current_user.tarot_results.find_by!(
+      mode: mode,
+      generated_on: Time.zone.today
+    )
     redirect_to existing, notice: "今日はすでに占っています。"
   end
 
@@ -51,24 +56,26 @@ class TarotResultsController < ApplicationController
     @tarot_result.with_lock do
       return redirect_to @tarot_result unless @tarot_result.can_draw_more?
 
-      new_card = draw_next_card!(@tarot_result)
+      draw_next_card!(@tarot_result)
       refresh_result_text!(@tarot_result)
-
-      @result_cards = @tarot_result.tarot_result_cards.order(:position)
-      @just_drawn_id = new_card.id
-
-      respond_to do |format|
-        format.turbo_stream
-        format.html { redirect_to @tarot_result, status: :see_other }
-      end
     end
+
+    redirect_to @tarot_result
   end
 
   def regenerate
+    msg = nil
+    ok = false
+
     @tarot_result.with_lock do
-      refresh_result_text!(@tarot_result)
+      msg, ok = refresh_result_text!(@tarot_result)
     end
-    redirect_to @tarot_result, notice: "占い文を更新しました"
+
+    if ok
+      redirect_to @tarot_result, notice: "メッセージを更新しました"
+    else
+      redirect_to @tarot_result, alert: msg
+    end
   end
 
   private
@@ -104,8 +111,18 @@ class TarotResultsController < ApplicationController
   end
 
   def refresh_result_text!(tarot_result)
-    text = AiFortuneService.new(tarot_result).call
-    tarot_result.update!(result_text: text)
+    new_text, ok = AiFortuneService.new(tarot_result).call
+    return [new_text, false] unless ok
+
+    combined =
+      if tarot_result.result_text.present?
+        "#{tarot_result.result_text}\n\n#{new_text}"
+      else
+        new_text
+      end
+
+    tarot_result.update!(result_text: combined)
+    [new_text, true]
   end
 
   def draw_next_card!(tarot_result)
@@ -135,5 +152,10 @@ class TarotResultsController < ApplicationController
     raise "TarotCard がありません。seed しましたか？" if scope.none?
 
     scope.order(Arel.sql("RANDOM()")).first
+  end
+
+  def daily_limit_enabled?
+    # "0" / "false" / "off" のとき無効、それ以外は有効
+    !%w[0 false off].include?(ENV.fetch("DAILY_LIMIT_ENABLED", "true").to_s.downcase)
   end
 end

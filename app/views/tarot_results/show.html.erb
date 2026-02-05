@@ -8,30 +8,18 @@
     <div class="mt-3 text-sm text-gray-500">
       <% if @tarot_result.fortune_type == "today" %>
         今日の運勢
-      <% elsif @tarot_result.fortune_type == "genre" %>
-        ジャンル別占い（<%= @tarot_result.genre %>）
       <% elsif @tarot_result.fortune_type == "emotion" %>
         感情から占う（<%= @tarot_result.emotion %>）
+      <% elsif @tarot_result.fortune_type == "genre" %>
+        ジャンル別占い（<%= @tarot_result.genre %>）
       <% end %>
       ・<%= l(@tarot_result.created_at, format: :short) %>
     </div>
   </div>
 
-  <% if @tarot_result.result_text.present? %>
-    <%= simple_format(@tarot_result.result_text) %>
-  <% else %>
-    <p class="text-sm text-gray-500">
-      占い文は未生成です
-    </p>
-  <% end %>
-
-  <%= turbo_frame_tag dom_id(@tarot_result, :cards) do %>
-    <%= render "cards", tarot_result: @tarot_result, result_cards: @result_cards %>
-  <% end %>
-
-  <%= turbo_frame_tag dom_id(@tarot_result, :message) do %>
-    <%= render "message", tarot_result: @tarot_result %>
-  <% end %>
+  <%= render "cards", tarot_result: @tarot_result %>
+  <%= render "message", tarot_result: @tarot_result %>
+  <%= render "draw_button", tarot_result: @tarot_result %>
 
   <% if user_signed_in? %>
     <%= turbo_frame_tag dom_id(@tarot_result, :like_button) do %>

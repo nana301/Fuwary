@@ -97,6 +97,25 @@ Rails.application.configure do
 
   config.assets.css_compressor = nil
 
+  config.action_mailer.default_url_options = { host: "YOUR_DOMAIN.com", protocol: "https" }
+
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV.fetch("SMTP_ADDRESS"),
+    port: ENV.fetch("SMTP_PORT", 587),
+    domain: ENV.fetch("SMTP_DOMAIN", ENV.fetch("APP_DOMAIN", "YOUR_DOMAIN.com")),
+    user_name: ENV.fetch("SMTP_USERNAME"),
+    password: ENV.fetch("SMTP_PASSWORD"),
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+
+  config.action_mailer.default_options = {
+    from: ENV.fetch("MAIL_FROM", "no-reply@YOUR_DOMAIN.com")
+  }
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com

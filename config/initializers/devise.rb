@@ -308,6 +308,8 @@ Devise.setup do |config|
   config.responder.error_status = :unprocessable_content
   config.responder.redirect_status = :see_other
 
+  config.confirm_within = 3.days
+
   # ==> Configuration for :registerable
 
   # When set to false, does not sign a user in automatically after their password is

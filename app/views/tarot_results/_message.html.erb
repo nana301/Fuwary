@@ -1,19 +1,35 @@
-<div>
-  <%= render "shared/card",
-        title: "🔮 総合メッセージ",
-        subtitle: "カードを引くたびに内容が更新されます" do %>
+<%= render "shared/card",
+      title: "🔮 総合メッセージ",
+      subtitle: "カードを引くたびに内容が更新されます" do %>
 
-    <div class="text-center">
-      <p class="text-gray-800 leading-relaxed whitespace-pre-line text-base md:text-lg">
-        <% if tarot_result.result_text.present? %>
-          <%= tarot_result.result_text %>
-        <% else %>
-          <span class="text-gray-500">
-            まずは1枚目のカードからメッセージを受け取りましょう。
-          </span>
-        <% end %>
-      </p>
+  <!-- 本文 -->
+  <div class="text-gray-800 leading-relaxed whitespace-pre-line text-base md:text-lg">
+    <% if tarot_result.result_text.present? %>
+      <%= simple_format(tarot_result.result_text) %>
+    <% elsif tarot_result.tarot_result_cards.any? %>
+      <span class="text-gray-500">
+        カードのメッセージを整えています…。少し待ってから更新してみてください。
+      </span>
+    <% else %>
+      <span class="text-gray-500">
+        まずはカードを引いてみましょう。
+      </span>
+    <% end %>
+  </div>
+
+  <!-- 署名（右下固定行） -->
+  <% if tarot_result.result_text.present? %>
+    <div class="mt-4 w-full flex justify-end">
+      <div class="flex items-center gap-2">
+        <%= image_tag "tanumaru大.png",
+              alt: "たぬまる先生",
+              class: "w-12 h-12 rounded-full ring-1 ring-gray-200 object-cover" %>
+
+        <span class="text-sm text-gray-600 whitespace-nowrap">
+          ― たぬまる先生
+        </span>
+      </div>
     </div>
-
   <% end %>
-</div>
+
+<% end %>

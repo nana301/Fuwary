@@ -14,7 +14,6 @@ class AddGeneratedOnAndModeToTarotResults < ActiveRecord::Migration[7.2]
     change_column_null :tarot_results, :mode, false
     change_column_null :tarot_results, :generated_on, false
 
-    -- ★ ここが重要：重複削除
     execute <<~SQL
       DELETE FROM tarot_results a
       USING tarot_results b

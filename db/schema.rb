@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_05_030158) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_05_084855) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -39,6 +39,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_05_030158) do
     t.text "meaning"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "arcana", default: 0, null: false
+    t.string "suit"
+    t.index ["arcana"], name: "index_tarot_cards_on_arcana"
+    t.index ["suit"], name: "index_tarot_cards_on_suit"
   end
 
   create_table "tarot_result_cards", force: :cascade do |t|
@@ -65,6 +69,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_05_030158) do
     t.bigint "tarot_card_id"
     t.string "mode", null: false
     t.date "generated_on", null: false
+    t.string "last_draw_key"
+    t.datetime "last_draw_at"
     t.index ["tarot_card_id"], name: "index_tarot_results_on_tarot_card_id"
     t.index ["user_id", "mode", "generated_on"], name: "index_tarot_results_unique_daily_per_mode", unique: true
     t.index ["user_id"], name: "index_tarot_results_on_user_id"
@@ -78,6 +84,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_05_030158) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

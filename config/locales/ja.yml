@@ -5,9 +5,16 @@ ja:
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード（確認）"
+
+  errors:
+    messages:
+      blank: "を入力してください"
+      taken: "はすでに使用されています"
+
   time:
     formats:
       short: "%Y/%m/%d %H:%M"
+
   date:
     formats:
       short: "%Y/%m/%d"

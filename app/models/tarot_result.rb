@@ -12,8 +12,13 @@ class TarotResult < ApplicationRecord
   validates :genre, presence: true, if: -> { fortune_type == "genre" }
   validates :emotion, presence: true, if: -> { fortune_type == "emotion" }
 
-  def max_cards
-    fortune_type == "today" ? 2 : 3
+   def max_cards
+    case fortune_type
+    when "today"
+      2
+    else
+      3
+    end
   end
 
   def can_draw_more?

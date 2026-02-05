@@ -1,8 +1,8 @@
 <div class="mb-8 flex justify-center" data-controller="tanumarusensei">
   <div class="w-full max-w-3xl">
     <div class="flex items-center gap-4">
-      <%= image_tag "tanumaru.png",
-        class: "h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-gray-200" %>
+      <%= image_tag "tanumaru変更.png",
+            class: "h-18 w-18 shrink-0 rounded-full object-cover ring-1 ring-gray-200" %>
 
       <div class="flex-1 min-w-0">
         <div class="rounded-2xl bg-gray-100 px-6 py-4 shadow-sm">
@@ -45,58 +45,7 @@
       <% end %>
     </section>
 
-    <!-- ジャンル別占い -->
-    <section class="bg-white/90 backdrop-blur rounded-2xl shadow-2xl ring-1 ring-black/5 p-8 md:p-10">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">ジャンル別占い</h2>
-        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-          🔒 ログイン必須
-        </span>
-      </div>
-
-      <% if user_signed_in? %>
-        <%= form_with url: tarot_results_path, method: :post, class: "space-y-5" do %>
-          <%= hidden_field_tag :fortune_type, "genre" %>
-
-          <%# ✅ ジャンルのエラーをフォーム直下に出す %>
-          <% if flash.now[:invalid_fortune_type] == "genre" && flash.now[:alert].present? %>
-            <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 font-semibold">
-              <%= flash.now[:alert] %>
-            </div>
-          <% end %>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">ジャンルを選択</label>
-            <select name="genre" required
-              class="w-full p-3 border border-gray-300 rounded-xl bg-white
-                     focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-              <option value="" selected disabled>ジャンルを選択</option>
-              <option value="恋愛">恋愛</option>
-              <option value="仕事">仕事</option>
-              <option value="人間関係">人間関係</option>
-            </select>
-          </div>
-
-          <div class="flex justify-center">
-            <button
-              class="w-full max-w-md py-4 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-xl
-                     hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.99]">
-              占う
-            </button>
-          </div>
-        <% end %>
-      <% else %>
-        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
-          <p class="text-gray-700 mb-4">ログインすると利用できます</p>
-          <%= link_to "ログイン / 新規登録",
-                new_user_session_path,
-                class: "inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white border border-gray-200
-                        hover:bg-gray-100 transition font-semibold text-gray-800" %>
-        </div>
-      <% end %>
-    </section>
-
-    <!-- 感情から占う -->
+        <!-- 感情から占う -->
     <section class="bg-white/90 backdrop-blur rounded-2xl shadow-2xl ring-1 ring-black/5 p-8 md:p-10">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800">感情から占う</h2>
@@ -117,7 +66,7 @@
           <% end %>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">今の気持ちを選んでね</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">今の気持ちを選んでください</label>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <% @emotions.each_with_index do |e, idx| %>
@@ -154,6 +103,57 @@
         <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
           <p class="text-gray-700 mb-4">ログインすると利用できます</p>
           <%= link_to "ログインして占う",
+                new_user_session_path,
+                class: "inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white border border-gray-200
+                        hover:bg-gray-100 transition font-semibold text-gray-800" %>
+        </div>
+      <% end %>
+    </section>
+
+    <!-- ジャンル別占い -->
+    <section class="bg-white/90 backdrop-blur rounded-2xl shadow-2xl ring-1 ring-black/5 p-8 md:p-10">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">ジャンル別占い</h2>
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+          🔒 ログイン必須
+        </span>
+      </div>
+
+      <% if user_signed_in? %>
+        <%= form_with url: tarot_results_path, method: :post, class: "space-y-5" do %>
+          <%= hidden_field_tag :fortune_type, "genre" %>
+
+          <%# ✅ ジャンルのエラーをフォーム直下に出す %>
+          <% if flash.now[:invalid_fortune_type] == "genre" && flash.now[:alert].present? %>
+            <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 font-semibold">
+              <%= flash.now[:alert] %>
+            </div>
+          <% end %>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">相談するジャンルを選んでください</label>
+            <select name="genre" required
+              class="w-full p-3 border border-gray-300 rounded-xl bg-white
+                     focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="" selected disabled>ジャンルを選択</option>
+              <option value="恋愛">恋愛</option>
+              <option value="仕事">仕事</option>
+              <option value="人間関係">人間関係</option>
+            </select>
+          </div>
+
+          <div class="flex justify-center">
+            <button
+              class="w-full max-w-md py-4 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-xl
+                     hover:shadow-xl transition transform hover:scale-[1.02] active:scale-[0.99]">
+              占う
+            </button>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
+          <p class="text-gray-700 mb-4">ログインすると利用できます</p>
+          <%= link_to "ログイン / 新規登録",
                 new_user_session_path,
                 class: "inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white border border-gray-200
                         hover:bg-gray-100 transition font-semibold text-gray-800" %>

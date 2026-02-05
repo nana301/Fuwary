@@ -6,10 +6,10 @@ export default class extends Controller {
   connect() {
     console.log("🦝 tanumarusensei connected")
     const messages = [
-      "ようこそ。今日は何を占ってみる？",
+      "ようこそ。今日は何を占ってみますか？",
       "気になること、ひとつカードに聞いてみませんか？",
       "今の流れを、そっと占ってみましょう。",
-      "迷っていることがあれば、ここから始めてみてね。",
+      "迷っていることがあれば、ここから始めてみてください。",
       "今日はどんなメッセージが届くでしょうか？"
     ]
 

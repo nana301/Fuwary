@@ -11,6 +11,9 @@ ja:
       not_found_in_database: "メールアドレスまたはパスワードが違います。"
       timeout: "セッションの有効期限が切れました。"
       unauthenticated: "ログインしてください。"
+      unconfirmed: "メールアドレスの確認が必要です。届いた確認メールのリンクをクリックしてください。"
+      user:
+        unconfirmed: "メールアドレスの確認が必要です。届いた確認メールのリンクをクリックしてください。"
     registrations:
       signed_up: "アカウント登録が完了しました。"
       updated: "アカウント情報を更新しました。"
