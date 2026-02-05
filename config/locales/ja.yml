@@ -1,0 +1,13 @@
+ja:
+  activerecord:
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+  time:
+    formats:
+      short: "%Y/%m/%d %H:%M"
+  date:
+    formats:
+      short: "%Y/%m/%d"

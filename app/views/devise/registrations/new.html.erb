@@ -1,28 +1,43 @@
-<h2>Sign up</h2>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <div class="field">
     <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+    <p>
+      <%= f.email_field :email,
+        autofocus: true,
+        autocomplete: "email",
+        class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
+    </p>
   </div>
 
   <div class="field">
     <p><%= f.label :password %></p>
     <% if @minimum_password_length %>
-      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
+      <p class="text-sm text-gray-500">
+        <em>(<%= @minimum_password_length %> characters minimum)</em>
+      </p>
     <% end %>
-    <p><%= f.password_field :password, autocomplete: "new-password" %></p>
+    <p>
+      <%= f.password_field :password,
+        autocomplete: "new-password",
+        class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
+    </p>
   </div>
 
   <div class="field">
     <p><%= f.label :password_confirmation %></p>
-    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
+    <p>
+      <%= f.password_field :password_confirmation,
+        autocomplete: "new-password",
+        class: "w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-purple-400 focus:ring focus:ring-purple-200/60" %>
+    </p>
   </div>
 
   <div class="actions">
-    <%= f.submit "Sign up" %>
+    <%= f.submit "登録する",
+      class: "mt-4 inline-flex w-full items-center justify-center rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-200/60" %>
   </div>
 <% end %>
 
