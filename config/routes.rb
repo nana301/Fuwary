@@ -14,6 +14,11 @@ Rails.application.routes.draw do
     resource :like, only: %i[create destroy]
   end
 
+  namespace :ops do
+    get  :status
+    post :seed
+  end
+
   get "guest_tarot_result", to: "tarot_results#guest", as: :guest_tarot_result
 
   get "up" => "rails/health#show", as: :rails_health_check

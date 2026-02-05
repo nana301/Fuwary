@@ -1,39 +1,29 @@
 class OpsController < ApplicationController
-  skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_user!
+  before_action :verify_ops_token!
 
   def status
-    return head :forbidden unless authorized?
-
     render json: {
       tarot_cards: TarotCard.count,
-      major: TarotCard.where(arcana: "major").count
+      tarot_results: TarotResult.count
     }
   end
 
   def seed
-    return head :forbidden unless authorized?
-
-    if TarotCard.count > 0
-      render json: { ok: true, message: "already seeded", tarot_cards: TarotCard.count }, status: 200
-      return
-    end
-
     Rails.application.load_seed
-
-    render json: {
-      ok: true,
-      tarot_cards: TarotCard.count,
-      major: TarotCard.where(arcana: "major").count
-    }, status: 200
+    render json: { ok: true }
   end
 
   private
 
-  def authorized?
-    Rails.env.production? &&
-      ActiveSupport::SecurityUtils.secure_compare(
-        request.headers["X-OPS-TOKEN"].to_s,
-        ENV.fetch("OPS_TOKEN", "")
-      )
+  def verify_ops_token!
+    token = request.headers["X-OPS-TOKEN"]
+    unless ActiveSupport::SecurityUtils.secure_compare(
+      token.to_s,
+      ENV.fetch("OPS_TOKEN")
+    )
+      head :unauthorized
+    end
   end
 end
+
