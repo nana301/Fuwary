@@ -5,24 +5,6 @@
       🔮 占い結果
     </h1>
 
-    <% if flash[:notice].present? %>
-      <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
-        <%= flash[:notice] %>
-      </div>
-    <% end %>
-
-    <% if flash[:alert].present? %>
-      <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800">
-        <%= flash[:alert] %>
-      </div>
-    <% end %>
-
-    <div class="text-xs text-gray-500 mb-3">
-      debug: result_id=<%= @tarot_result.id %> /
-      cards=<%= @tarot_result.tarot_result_cards.count %> /
-      max=<%= @tarot_result.max_cards %>
-    </div>
-
     <div class="mt-3 text-sm text-gray-500">
       <% if @tarot_result.fortune_type == "today" %>
         今日の運勢
