@@ -55,7 +55,7 @@ class AiFortuneService
 
   def client
     @client ||= OpenAI::Client.new(
-      api_key: Rails.application.credentials.dig(:openai, :api_key)
+      api_key: ENV["OPENAI_API_KEY"] || Rails.application.credentials.dig(:openai, :api_key)
     )
   end
 
@@ -410,3 +410,12 @@ class AiFortuneService
     # 安定・観察・流れを見る
     :calm
   end
+
+  def closing_structure_hint
+    if tarot_result.can_draw_more? || single_card?
+      "4. 問いかけで締める"
+    else
+      "4. 前向きな一言で締める"
+    end
+  end
+end

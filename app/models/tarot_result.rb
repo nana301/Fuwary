@@ -1,5 +1,5 @@
 class TarotResult < ApplicationRecord
-  before_validation :set_generated_on, on: :create
+  before_validation :set_mode_and_generated_on, on: :create
   belongs_to :user, optional: true
 
   has_many :tarot_result_cards, dependent: :destroy
@@ -11,6 +11,11 @@ class TarotResult < ApplicationRecord
   validates :fortune_type, presence: true, inclusion: { in: FORTUNE_TYPES }
   validates :genre, presence: true, if: -> { fortune_type == "genre" }
   validates :emotion, presence: true, if: -> { fortune_type == "emotion" }
+
+  def set_mode_and_generated_on
+    self.mode ||= fortune_type.presence || "unknown"
+    self.generated_on ||= Time.zone.today
+  end
 
    def max_cards
     case fortune_type
@@ -45,4 +50,39 @@ class TarotResult < ApplicationRecord
   def set_generated_on
     self.generated_on ||= Time.zone.today
   end
+
+  def draw_next_card!
+    return false unless can_draw_more?
+
+    position = tarot_result_cards.count + 1
+    card = pick_card_for
+    return false unless card
+
+    orientation = rand < 0.5 ? "upright" : "reversed"
+
+    tarot_result_cards.create!(
+      tarot_card: card,
+      position: position,
+      orientation: orientation
+    )
+
+    true
+  end
+
+  private
+
+  def pick_card_for
+    scope =
+      if tarot_result_cards.empty?
+        TarotCard.where(arcana: "major")
+      else
+        TarotCard.all
+      end
+
+    drawn_ids = tarot_result_cards.pluck(:tarot_card_id)
+    scope = scope.where.not(id: drawn_ids) if drawn_ids.any?
+
+    scope.order(Arel.sql("RANDOM()")).first
+  end
+
 end

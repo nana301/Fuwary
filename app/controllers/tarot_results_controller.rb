@@ -53,12 +53,16 @@ class TarotResultsController < ApplicationController
   end
 
   def draw
-    card = draw_card_for(@tarot_result)
+    unless @tarot_result.draw_next_card!
+      redirect_to @tarot_result, alert: "これ以上カードを引けません"
+      return
+    end
 
-    @tarot_result.tarot_result_cards.create!(
-      tarot_card: card,
-      orientation: %w[upright reversed].sample
-    )
+    text, ok = AiFortuneService.new(@tarot_result).call
+
+    Rails.logger.info("[draw] AiFortuneService ok=#{ok} len=#{text.to_s.length} tarot_result_id=#{@tarot_result.id}")
+
+    @tarot_result.update!(result_text: text) if ok
 
     redirect_to @tarot_result
   end
@@ -125,37 +129,13 @@ class TarotResultsController < ApplicationController
     [new_text, true]
   end
 
-  def draw_next_card!(tarot_result)
-    position = tarot_result.tarot_result_cards.count + 1
-
-    card = pick_card_for(tarot_result) 
-
-    orientation = rand < 0.5 ? "upright" : "reversed"
-
-    tarot_result.tarot_result_cards.create!(
-      tarot_card: card,
-      position: position,
-      orientation: orientation
-    )
-  end
-
   def set_tarot_result
     @tarot_result = TarotResult.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to root_path, alert: "結果が見つかりませんでした。もう一度占ってください。"
   end
 
-  def pick_card_for(tarot_result)
-    used_ids = tarot_result.tarot_result_cards.pluck(:tarot_card_id)
-    scope = TarotCard.where.not(id: used_ids)
-
-    raise "TarotCard がありません。seed しましたか？" if scope.none?
-
-    scope.order(Arel.sql("RANDOM()")).first
-  end
-
   def daily_limit_enabled?
-    # "0" / "false" / "off" のとき無効、それ以外は有効
     !%w[0 false off].include?(ENV.fetch("DAILY_LIMIT_ENABLED", "true").to_s.downcase)
   end
 end
