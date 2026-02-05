@@ -64,7 +64,7 @@ class TarotResultsController < ApplicationController
 
     @tarot_result.update!(result_text: text) if ok
 
-    redirect_to @tarot_result
+    redirect_to @tarot_result, notice: "カードを引きました（#{@tarot_result.tarot_result_cards.count}枚目）", status: :see_other
   end
 
   def regenerate
