@@ -4,12 +4,17 @@ export default class extends Controller {
   static targets = ["message"]
 
   connect() {
+    console.log("🦝 tanumarusensei connected")
     const messages = [
-       "こんにちは。今日は、どんなことを占ってみましょうか？",
-       "よろしければ、今のお気持ちから見てみますか？",
-       "今日は、流れをゆっくり整えていく日にしてみてもよさそうですね。"
+      "ようこそ。今日は何を占ってみる？",
+      "気になること、ひとつカードに聞いてみませんか？",
+      "今の流れを、そっと占ってみましょう。",
+      "迷っていることがあれば、ここから始めてみてね。",
+      "今日はどんなメッセージが届くでしょうか？"
     ]
-    this.messageTarget.textContent = messages[Math.floor(Math.random() * messages.length)]
+
+    this.messageTarget.textContent =
+      messages[Math.floor(Math.random() * messages.length)]
   }
 
   go(event) {
