@@ -64,10 +64,13 @@ class TarotResultsController < ApplicationController
       return
     end
 
-    text, ok_ai = AiFortuneService.new(@tarot_result).call
-    @tarot_result.update!(result_text: text) if ok_ai
+    msg, ok = refresh_result_text!(@tarot_result)
 
-    redirect_to @tarot_result, notice: "カードを引きました", status: :see_other
+    if ok
+      redirect_to @tarot_result, notice: "カードを引きました", status: :see_other
+    else
+      redirect_to @tarot_result, alert: msg, status: :see_other
+    end
   end
 
   def regenerate
