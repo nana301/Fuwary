@@ -1,4 +1,5 @@
 class TarotResult < ApplicationRecord
+  before_validation :set_generated_on, on: :create
   belongs_to :user, optional: true
 
   has_many :tarot_result_cards, dependent: :destroy
@@ -34,5 +35,9 @@ class TarotResult < ApplicationRecord
 
   def complete?
     drawn_cards_count == 3
+  end
+
+  def set_generated_on
+    self.generated_on ||= Time.zone.today
   end
 end

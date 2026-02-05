@@ -18,29 +18,29 @@ class TarotResultsController < ApplicationController
     require_login_for_member_fortunes!
     return unless user_signed_in?
 
-    @tarot_result =
-      if user_signed_in?
-        build_member_result!
-      else
-        build_guest_result!
-      end
+   mode = params[:fortune_type].to_s
+    existing = current_user.tarot_results.find_by(mode: mode, generated_on: Time.zone.today)
+    if existing
+      flash[:notice] = "今日の結果を表示しますね。"
+      return redirect_to existing
+    end
+
+    @tarot_result = build_member_result!
 
     draw_next_card!(@tarot_result)
 
-    begin
-      refresh_result_text!(@tarot_result)
-    rescue OpenAI::Errors::RateLimitError
-      @tarot_result.update!(result_text: nil) if @tarot_result.result_text.present?
-      flash[:alert] = "AI占い文の生成上限に達しています。課金設定後にもう一度お試しください。"
-    rescue OpenAI::Errors::AuthenticationError
-      flash[:alert] = "AI設定（APIキー）に問題があります。管理者に連絡してください。"
-    end
+    refresh_result_text!(@tarot_result)
 
-    redirect_to @tarot_result
+      redirect_to @tarot_result
+
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = e.record.errors.full_messages.first
     flash.now[:invalid_fortune_type] = params[:fortune_type]
     render "home/index", status: :unprocessable_entity
+
+  rescue ActiveRecord::RecordNotUnique
+    existing = current_user.tarot_results.find_by!(mode: mode, generated_on: Time.zone.today)
+    redirect_to existing, notice: "今日はすでに占っています。"
   end
 
   def show
@@ -52,22 +52,7 @@ class TarotResultsController < ApplicationController
       return redirect_to @tarot_result unless @tarot_result.can_draw_more?
 
       new_card = draw_next_card!(@tarot_result)
-
-      begin
-        refresh_result_text!(@tarot_result)
-      rescue OpenAI::Errors::RateLimitError
-      # 429: クォータ不足 / 上限到達
-        flash.now[:alert] = "AI占い文の生成上限に達しています。課金設定後に再度お試しください。"
-      # result_text は「前回のまま」でもOK。空にしたいなら↓
-      # @tarot_result.update!(result_text: nil)
-      rescue OpenAI::Errors::AuthenticationError
-      # 401: キー不正など（今は直ったはずだけど保険）
-        flash.now[:alert] = "AI設定（APIキー）に問題があります。"
-      rescue StandardError => e
-      # 予期せぬエラーでも落とさない（ログには残す）
-        Rails.logger.error("[AiFortuneService] #{e.class}: #{e.message}")
-        flash.now[:alert] = "AI占い文の生成に失敗しました。時間をおいて再度お試しください。"
-      end
+      refresh_result_text!(@tarot_result)
 
       @result_cards = @tarot_result.tarot_result_cards.order(:position)
       @just_drawn_id = new_card.id
@@ -84,8 +69,6 @@ class TarotResultsController < ApplicationController
       refresh_result_text!(@tarot_result)
     end
     redirect_to @tarot_result, notice: "占い文を更新しました"
-  rescue OpenAI::Errors::RateLimitError
-    redirect_to @tarot_result, alert: "AI占い文の生成上限に達しています。課金設定後に再度お試しください。"
   end
 
   private
@@ -112,14 +95,12 @@ class TarotResultsController < ApplicationController
   end
 
   def build_member_result!
-    tr = current_user.tarot_results.new(
+    current_user.tarot_results.create!(
+      mode: params[:fortune_type].to_s,
       fortune_type: params[:fortune_type],
-      genre: params[:genre],
-      emotion: params[:emotion]
+      emotion: params[:emotion],
+      genre: params[:genre]
     )
-
-    tr.save!
-    tr
   end
 
   def refresh_result_text!(tarot_result)

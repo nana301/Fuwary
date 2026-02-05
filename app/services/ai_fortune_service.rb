@@ -1,18 +1,28 @@
 class AiFortuneService
+  FALLBACK_GENERIC = "占い文の生成に失敗しました。もう一度お試しください。"
+  FALLBACK_SOFT    = "今はメッセージが静かに整えられている最中のようです。焦らず、少し時間をおいてからもう一度受け取ってみてください。"
+  
   def initialize(tarot_result)
     @tarot_result = tarot_result
   end
 
   def call
-    res = client.chat.completions.create(
-      model: "gpt-4o-mini",
-      messages: prompt_messages
-    )
+      res = client.chat.completions.create(
+        model: "gpt-4o-mini",
+        messages: prompt_messages
+      )
 
-    content = res.choices&.first&.message&.content
-    content.presence || "占い文の生成に失敗しました。もう一度お試しください。"
-  rescue OpenAI::Errors::RateLimitError, OpenAI::Errors::AuthenticationError
-    "今はメッセージが静かに整えられている最中のようです。焦らず、少し時間をおいてからもう一度受け取ってみてください。"
+      content = res.choices&.first&.message&.content
+      content.presence || FALLBACK_GENERIC
+
+    rescue OpenAI::Errors::RateLimitError, OpenAI::Errors::AuthenticationError => e
+      Rails.logger.warn("[AiFortuneService] #{e.class}: #{e.message}")
+      FALLBACK_SOFT
+
+    rescue StandardError => e
+      Rails.logger.error("[AiFortuneService] #{e.class}: #{e.message}")
+      FALLBACK_GENERIC
+    end
   end
 
   private

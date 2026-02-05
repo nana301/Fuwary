@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_04_061426) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_05_030158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,7 +63,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_04_061426) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "tarot_card_id"
+    t.string "mode", null: false
+    t.date "generated_on", null: false
     t.index ["tarot_card_id"], name: "index_tarot_results_on_tarot_card_id"
+    t.index ["user_id", "mode", "generated_on"], name: "index_tarot_results_unique_daily_per_mode", unique: true
     t.index ["user_id"], name: "index_tarot_results_on_user_id"
   end
 
