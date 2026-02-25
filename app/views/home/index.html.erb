@@ -2,7 +2,7 @@
   <div class="w-full max-w-3xl">
     <div class="flex items-center gap-4">
       <%= image_tag "tanumaru変更.png",
-            class: "h-22 w-22 shrink-0 rounded-full object-cover ring-1 ring-gray-200" %>
+            class: "h-14 w-14 shrink-0 rounded-full object-cover ring-1 ring-gray-200" %>
 
       <div class="flex-1 min-w-0">
         <div class="rounded-2xl bg-gray-100 px-6 py-4 shadow-sm">
@@ -34,7 +34,7 @@
         </span>
       </div>
 
-      <%= form_with url: tarot_results_path, method: :post, class: "flex justify-center" do %>
+      <%= form_with url: tarot_results_path, method: :post, scope: nil, class: "flex justify-center" do %>
         <%= hidden_field_tag :fortune_type, "today" %>
 
         <button
@@ -153,7 +153,7 @@
       <% else %>
         <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
           <p class="text-gray-700 mb-4">ログインすると利用できます</p>
-          <%= link_to "ログイン / 新規登録",
+          <%= link_to "ログインして占う",
                 new_user_session_path,
                 class: "inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white border border-gray-200
                         hover:bg-gray-100 transition font-semibold text-gray-800" %>

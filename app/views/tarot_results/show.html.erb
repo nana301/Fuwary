@@ -13,7 +13,7 @@
       <% elsif @tarot_result.fortune_type == "genre" %>
         ジャンル別占い（<%= @tarot_result.genre %>）
       <% end %>
-      ・<%= l(@tarot_result.created_at, format: :short) %>
+      ・<%= l(@tarot_result.created_at || Time.zone.now, format: :short) %>
     </div>
   </div>
 
